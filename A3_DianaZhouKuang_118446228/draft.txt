@@ -1,0 +1,71 @@
+/********************************************************************************
+*  WEB322 – Assignment 02
+* 
+*  I declare that this assignment is my own work in accordance with Seneca's
+*  Academic Integrity Policy:
+* 
+*  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
+* 
+*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-02-18
+*
+********************************************************************************/
+
+/*
+Part 2:
+
+const setData = require("../data/setData");
+const themeData = require("../data/themeData");
+
+let sets = [];
+
+function initialize() {
+    return new Promise((resolve, reject) => {
+      try {
+        sets = setData.map(set => {
+            const theme = themeData.find(theme => theme.id === set["1"]);
+          return {
+            set_num: set["001-1"],
+            name: set.Gears,
+            year: set["1965"],
+            theme_id: set["1"],
+            num_parts: set["43"],
+            img_url: set["https://cdn.rebrickable.com/media/sets/001-1.jpg"],
+            theme: theme ? theme.name : "Unknown Theme",
+          };
+        });
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+  
+function getAllSets() {
+    return sets;
+}
+
+function getSetByNum(setNum) {
+    return sets.find((set) => set.set_num === setNum);
+}
+
+function getSetsByTheme(theme) {
+    const themeLowerCase = theme.toLowerCase();
+
+    return sets.filter((set) =>
+        set.theme.toLowerCase().includes(themeLowerCase)
+    );
+}
+
+// Initializing the sets array
+initialize();
+
+const allSets = getAllSets();
+console.log(allSets);
+
+const specificSet = getSetByNum('001-1');
+console.log(specificSet);
+
+const setsByTheme = getSetsByTheme('technic');
+console.log(setsByTheme);
+
+*/
