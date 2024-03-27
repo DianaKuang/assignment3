@@ -640,5 +640,84 @@ video {
     }
 
 
-    
-  
+
+
+    /* Style for table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Style for table rows */
+tr {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Style for table cells */
+td, th {
+  padding: 12px;
+  text-align: left;
+}
+
+
+
+/* Style for table avatar */
+.avatar {
+  width: 120px; /* Increase width for larger avatar */
+  height: 120px; /* Increase height for larger avatar */
+  overflow: hidden;
+  border-radius: 15px; /* Rounded corners */
+}
+
+/* Style for table avatar background image */
+.avatar > div {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 15px; /* Rounded corners */
+}
+
+/* Style for button */
+
+
+.btn:hover {
+  background-color: #3e4aad;
+}
+
+/* Style for button (extra small) */
+.btn-xs {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+/* Style for font-bold class */
+.font-bold {
+  font-weight: bold;
+}
+
+/* Style for link when hovering */
+a:hover {
+  color: #e5c1ef; /* Change link color when hovering */
+}
+
+.set-image {
+  margin-left: 60px;
+  margin-right: 50px;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 10px; 
+  border: 2px solid #6038f0;
+}
+
+.profile-image {
+  max-width: 50%;
+  height: auto;
+  margin-left: 140px;
+  border-radius: 50%; 
+  border: 2px solid #6038f0;
+}
+
+
+
+

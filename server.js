@@ -1,3 +1,17 @@
+/********************************************************************************
+*  WEB322 – Assignment 04
+* 
+*  I declare that this assignment is my own work in accordance with Seneca's
+*  Academic Integrity Policy:
+* 
+*  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
+* 
+*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-03-27
+*  Published URL: https://tame-erin-earthworm-tux.cyclic.app/
+*
+********************************************************************************/
+
+
 const express = require('express');
 const legoData = require('./modules/legoSets');
 const path = require('path');
@@ -5,9 +19,15 @@ const path = require('path');
 const app = express();
 const PORT = 8000;
 
+// Updating server.js file to "set" the "view engine" 
+// setting to use the value: "ejs"
+app.set('view engine', 'ejs'); 
+
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.static('public'));
 
-// Ensure legoData is initialized
+// legoData initialized
 app.use(async (req, res, next) => {
     try {
         await legoData.initialize();
@@ -18,14 +38,14 @@ app.use(async (req, res, next) => {
     }
 });
 
-// Home route
+// Set up Home route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/views/home.html'));
+    res.render("home");
 });
 
 // About route
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname, '/views/about.html'));
+    res.render("about");
 });
 
 // Lego sets route
@@ -40,10 +60,17 @@ app.get('/lego/sets', async (req, res) => {
             sets = await legoData.getAllSets();
         }
 
-        res.json(sets);
+        if (sets.length === 0) {
+            // If no sets are found for the specified theme, render the 404 page
+            return res.status(404).render("404", { message: "No sets found for the specified theme" });
+        }
+
+        // res.json(sets);
+        res.render('sets', { sets });
+
     } catch (error) {
         console.error('Error:', error);
-        res.status(404).send('error');
+        res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for" });
     }
 });
 
@@ -53,17 +80,27 @@ app.get('/lego/sets/:setNum', async (req, res) => {
 
     try {
         const set = await legoData.getSetByNum(setNum);
-        res.json(set);
+
+       
+        res.render('set', { set });
+
     } catch (error) {
         console.error('Error:', error);
-        res.status(404).send('error');
+        res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for" });
     }
 });
 
+
 // 404 error route
-app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, '/views/404.html'));
+app.get('/404', (req, res) => {
+    res.render("404", { message: "I'm sorry, we're unable to find what you're looking for" });
 });
+
+// Handle 404 errors
+app.use((req, res) => {
+    res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for" });
+});
+
 
 // Run the server
 app.listen(PORT, () => {
