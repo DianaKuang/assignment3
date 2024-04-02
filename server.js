@@ -27,6 +27,9 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static('public'));
 
+// Parsing form data middleware
+app.use(express.urlencoded({ extended: true }));
+
 // legoData initialized
 app.use(async (req, res, next) => {
     try {
@@ -90,6 +93,29 @@ app.get('/lego/sets/:setNum', async (req, res) => {
     }
 });
 
+// Route to render addSet view with themes
+app.get('/lego/addSet', async (req, res) => {
+    try {
+        const themes = await legoData.getAllThemes();
+        console.log('Themes:', themes); // Log retrieved themes
+        res.render('addSet', { themes: themes });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+    }
+});
+
+
+// Route to handle form submission and add set
+app.post('/lego/addSet', async (req, res) => {
+    try {
+        await legoData.addSet(req.body);
+        res.redirect('/lego/sets');
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+    }
+});
 
 // 404 error route
 app.get('/404', (req, res) => {
@@ -100,6 +126,7 @@ app.get('/404', (req, res) => {
 app.use((req, res) => {
     res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for" });
 });
+
 
 
 // Run the server

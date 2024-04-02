@@ -38,7 +38,7 @@
           <span class="font-bold">Parts:</span> <%= set.num_parts %> <br>
           <div id="quote" class="py-3"></div>
           <br />
-          <a class="btn btn-success btn-sm" href="/lego/editSet/028-1">EDIT SET: <%= set.name %></a>
+          <a class="btn btn-success btn-sm" href="/lego/editSet/<%= set.set_num %>">EDIT SET: <%= set.name %></a>
           <a class="btn btn-primary btn-sm" href="#" onclick="history.back(); return false;">RETURN</a>
         </p>
       </div>

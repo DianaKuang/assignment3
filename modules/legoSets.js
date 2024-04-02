@@ -161,5 +161,20 @@ function getSetsByTheme(theme) {
     });
 }
 
-module.exports = { initialize, getAllSets, getAllThemes, getSetByNum, getSetsByTheme }
+function addSet(setData) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Create a new set using the Set model
+            await Set.create(setData);
+            // Resolve the promise
+            resolve();
+        } catch (err) {
+            // Reject the promise with the first error message
+            reject(new Error(err.errors[0].message));
+        }
+    });
+}
 
+
+
+module.exports = { initialize, getAllSets, getAllThemes, getSetByNum, getSetsByTheme, addSet };
