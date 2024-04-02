@@ -1,110 +1,165 @@
 /********************************************************************************
-*  WEB322 – Assignment 02
+*  WEB322 – Assignment 05
 * 
 *  I declare that this assignment is my own work in accordance with Seneca's
 *  Academic Integrity Policy:
 * 
 *  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
 * 
-*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-02-18
+*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-03-01
 *
 ********************************************************************************/
 
-// part 2 and 3.
-// This will automatically read both files and generate two arrays of objects: "setData" and "themeData".
-const setData = require("../data/setData");
+require('dotenv').config();
 const themeData = require("../data/themeData");
-// create a variable called "sets", initialized to an empty array
-let sets = [];
+const setData = require("../data/setData");
+const Sequelize = require('sequelize');
 
-// creating a function called initialize
-// purpose: fill the "sets" array, by adding copies of all the setData
+let sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: 'postgres',
+    port: 5432,
+    dialectOptions: {
+      ssl: { rejectUnauthorized: false },
+    },
+});
+
+sequelize
+    .authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch((err) => {
+        console.log('Unable to connect to the database:', err);
+    });
+
+const Theme = sequelize.define('Theme', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+}, {
+    createdAt: false,
+    updatedAt: false,
+    //timestamps: false,
+});
+
+const Set = sequelize.define('Set', {
+    set_num: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+    },
+    name: {
+        type: Sequelize.STRING,
+    },
+    year: {
+        type: Sequelize.INTEGER,
+    },
+    num_parts: {
+        type: Sequelize.INTEGER,
+    },
+    theme_id: {
+        type: Sequelize.INTEGER,
+    },
+    img_url: {
+        type: Sequelize.STRING,
+    },
+}, {
+    createdAt: false,
+    updatedAt: false,
+    //timestamps: false,
+});
+
+Set.belongsTo(Theme, { foreignKey: 'theme_id' });
+
+
 function initialize() {
-    // return a new promise object that "resolves" either with data (if the function returns data)
-    // this function should resolve with no data, once the operation is complete
-    return new Promise((resolve, reject) => {
-        try {
-            sets = setData.map(set => {
-                const theme = themeData.find(theme => theme.id === set["theme_id"]); // it will find the theme name according to ID
-                return {
-                    // I forgot to copy "set_num,name,year,theme_id,num_parts,img_url"
-                    // and the conversor considered the first row that I paste
-                    // as "connector".
-                /*    
-                set_num: set["001-1"],
-                name: set.Gears,
-                year: set["1965"],
-                theme_id: set["1"],
-                num_parts: set["43"],
-                img_url: set["https://cdn.rebrickable.com/media/sets/001-1.jpg"],
-                theme: theme ? theme.name : "Unknown Theme",
-                */
-                  // set_num,name,year,theme_id,num_parts,img_url
-                set_num: set["set_num"],
-                name: set.name,
-                year: set["year"],
-                theme_id: set["theme_id"],
-                num_parts: set["num_parts"],
-                img_url: set["img_url"],
-                theme: theme ? theme.name : "Unknown Theme",
+    return new Promise(async (resolve, reject) => {
+    try {
+      await sequelize.sync();
 
+  // check for default themes
+      let themes = await Theme.findAll();
+      if (themes.length === 0) {
+        themeData.forEach(async function (theme) {
+          console.log(theme);
+          await Theme.create(theme);
+        });
+      }
 
-                };
-            });
-            resolve();
-        } catch (error) {
-            // or rejects with an error if the function encounters an error
-            reject(error);
-        }
-    });
-}
+      let sets = await Set.findAll();
+      if (sets.length === 0) {
 
-// creating a function called getAllSets
-// this function simply returns the complete "sets" array
+        setData.forEach(async function (set) {
+            await Set.create(set);
+        });
+      }
+
+      resolve();
+    } catch (err) {
+      reject(err.message);
+    }
+  });
+} 
+
+  
 function getAllSets() {
-    // this function should resolve with the completed "sets" array
-    return new Promise((resolve) => resolve(sets));
+    return new Promise(async (resolve, reject) => {
+        let sets = await Set.findAll({ include: [Theme] });
+        resolve(sets);
+    });   
 }
 
-// creating a function called getSetByNum
-// this function will return a specific "set" object from the "sets" array
-// whose "set_num" value matches the value of the "setNum"
+function getAllThemes() {
+    return new Promise(async (resolve, reject) => {
+        themes = await Theme.findAll();
+
+        resolve(themes);
+    });
+}
+
+
 function getSetByNum(setNum) {
-    // this should resolve with the found "set" object, and reject with an appropriate message
-    return new Promise((resolve, reject) => {
-        const set = sets.find((set) => set.set_num === setNum);
-        if (set) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const set = await Set.findOne({ 
+                include: [Theme],
+                where: { set_num: setNum } 
+            });
+            if (!set) {
+                throw new Error(`Unable to find requested set`);
+            }
             resolve(set);
-        } else {
-            reject(`Unable to find set with set number: ${setNum}`);
+        } catch (err) {
+            reject(new Error('Unable to retrieve set'));
         }
     });
 }
 
-// creating a function called getSetsByTheme
-// purpose: return an array of objects from the "sets" array whose "theme" value matches the "theme" parameter 
 function getSetsByTheme(theme) {
-    const themeLowerCase = theme.toLowerCase();
-    const filteredSets = sets.filter((set) =>
-        set.theme.toLowerCase().includes(themeLowerCase)
-    );
-    return new Promise((resolve) => resolve(filteredSets));
-    
+    return new Promise(async (resolve, reject) => {
+        try {
+            const sets = await Set.findAll({ 
+                include: [Theme], 
+                where: {
+                    '$Theme.name$': {
+                        [Sequelize.Op.iLike]: `%${theme}%`
+                    }
+                } 
+            });
+            if (!sets || sets.length === 0) {
+                throw new Error(`Unable to find requested sets`);
+            }
+            resolve(sets);
+        } catch (err) {
+            reject(new Error('Unable to retrieve sets'));
+        }
+    });
 }
 
-/* Part 3.Testing:
-// Initializing the sets array
-initialize();
+module.exports = { initialize, getAllSets, getAllThemes, getSetByNum, getSetsByTheme }
 
-const allSets = getAllSets();
-console.log(allSets);
-
-const specificSet = getSetByNum('001-1');
-console.log(specificSet);
-
-const setsByTheme = getSetsByTheme('technic');
-console.log(setsByTheme);
- */
-
-// Module exports
-module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme };

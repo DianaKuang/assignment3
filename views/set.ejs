@@ -13,35 +13,39 @@
   
   <br>
 
-  <div class="hero bg-base-200 rounded-lg p-6">
-    <div class="hero-content text-center ">
-      <div class="max-w-md">
-        <h1 class="text-5xl font-bold"><%= set.name %></h1>
+  <div class="container mx-auto p-4">
 
-        <p class="py-6">Below, you will find detailed information about the set: <%= set.name %>.</p>
-        <br>
-        <div class="container flex items-center">
-            <br>
-            <img src="<%= set.img_url %>" alt="<%= set.name %> Image" class="set-image">
-           
-            <div class="ml-4">
-              <p><span class="font-bold">Year:</span> <%= set.year %></p>
-              <p><span class="font-bold">Theme:</span> <%= set.theme %></p>
-              <p><span class="font-bold">Parts:</span> <%= set.num_parts %></p>
-              
-            </div>
-            <br>
-          </div>
-          <br>
-          <div id="quote" class="py-3"></div>
-          
-          <br>
-          
-          <a href="#" onclick="history.back(); return false;" class="btn btn-primary">Back</a>
-                 
+    <div class="hero bg-base-200 rounded-lg p-6">
+      <div class="hero-content text-center ">
+        <div class="max-w-md">
+          <h1 class="text-5xl font-bold"><%= set.name %></h1>
+          <p class="py-6">Below, you will find detailed information about the set:</p>
+        </div>
       </div>
     </div>
+  
+    <br />
+  
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <img class="w-full rounded-lg" src="<%= set.img_url %>" alt="<%= set.name %>" />
+      </div>
+      <div class="prose">
+        <p>
+          <span class="font-bold">Name:</span> <%= set.name %> <br />
+          <span class="font-bold">Year:</span> <%= set.year %> <br />
+          <span class="font-bold">Theme:</span> <%= set.Theme.name %> <br />
+          <span class="font-bold">Parts:</span> <%= set.num_parts %> <br>
+          <div id="quote" class="py-3"></div>
+          <br />
+          <a class="btn btn-success btn-sm" href="/lego/editSet/028-1">EDIT SET: <%= set.name %></a>
+          <a class="btn btn-primary btn-sm" href="#" onclick="history.back(); return false;">RETURN</a>
+        </p>
+      </div>
+    </div>
+  
   </div>
+  
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -55,6 +59,17 @@
     });
   </script>
 
+<footer class="bg-base-100 text-center py-4">
+  <p class="text-sm">
+      I have used this website as reference:
+      <br>
+      <a href="https://rose-camel-belt.cyclic.app/" target="_blank" rel="noopener noreferrer" class="text-primary">
+        <u>https://rose-camel-belt.cyclic.app/</u>
+        
+      </a>
+    </p>
+</footer>
+<br>
 </body>
 
 </html>
