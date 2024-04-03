@@ -6,7 +6,7 @@
 * 
 *  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
 * 
-*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-04-
+*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-04-02
 *  Published URL: https://tame-erin-earthworm-tux.cyclic.app/
 *
 ********************************************************************************/
@@ -116,6 +116,57 @@ app.post('/lego/addSet', async (req, res) => {
         res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
     }
 });
+
+
+// GET route to render the editSet view with set data and themes
+app.get('/lego/editSet/:num', async (req, res) => {
+    const { num } = req.params;
+
+    try {
+        // Retrieve set data by set number
+        const set = await legoData.getSetByNum(num);
+        // Retrieve all themes
+        const themes = await legoData.getAllThemes();
+        
+        // Render the edit view with set data and themes
+        res.render('editSet', { set, themes });
+    } catch (error) {
+        console.error('Error:', error);
+        // Render 404 view with error message if there's a problem obtaining set or themes
+        res.status(404).render('404', { message: error.message });
+    }
+});
+
+// POST route to handle form submission and edit set
+app.post('/lego/editSet', async (req, res) => {
+    const { set_num, ...setData } = req.body;
+
+    try {
+        // Edit set using set_num and setData
+        await legoData.editSet(set_num, setData);
+        // Redirect to lego/sets route after successful edit
+        res.redirect('/lego/sets');
+    } catch (error) {
+        console.error('Error:', error);
+        // Render 500 view with error message if there's an error editing the set
+        res.status(500).render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
+    }
+});
+
+
+// Route to delete a set
+app.get('/lego/deleteSet/:num', async (req, res) => {
+    const { num } = req.params;
+
+    try {
+        await legoData.deleteSet(num);
+        res.redirect('/lego/sets');
+    } catch (error) {
+        console.error('Error:', error);
+        res.render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+    }
+});
+
 
 // 404 error route
 app.get('/404', (req, res) => {

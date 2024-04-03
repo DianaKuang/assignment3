@@ -6,7 +6,9 @@
 * 
 *  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
 * 
-*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-03-01
+*  Name: Diana Zhou Kuang Student ID: 118446228 Date: 2024-04-02
+*
+*  Published URL: https://tame-erin-earthworm-tux.cyclic.app/
 *
 ********************************************************************************/
 
@@ -175,6 +177,45 @@ function addSet(setData) {
     });
 }
 
+async function editSet(set_num, setData) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Find the set by set_num and update its data with setData
+            const [updatedRowsCount, updatedRows] = await Set.update(setData, {
+                where: { set_num: set_num },
+                returning: true, // Return the updated rows
+            });
 
+            if (updatedRowsCount === 0) {
+                // If no rows were updated, reject the Promise with an error message
+                throw new Error('No set found with the provided set number');
+            }
 
-module.exports = { initialize, getAllSets, getAllThemes, getSetByNum, getSetsByTheme, addSet };
+            // Resolve the Promise
+            resolve();
+        } catch (err) {
+            // Reject the Promise with the first error message
+            reject(new Error(err.errors[0].message));
+        }
+    });
+}
+
+async function deleteSet(set_num) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const deletedRowCount = await Set.destroy({
+                where: { set_num: set_num },
+            });
+
+            if (deletedRowCount === 0) {
+                throw new Error('No set found with the provided set number');
+            }
+
+            resolve();
+        } catch (err) {
+            reject(new Error(err.errors[0].message));
+        }
+    });
+}
+
+module.exports = { initialize, getAllSets, getAllThemes, getSetByNum, getSetsByTheme, addSet, editSet, deleteSet };
